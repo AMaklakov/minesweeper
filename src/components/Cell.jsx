@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react'
 
-export const Cell = ({ text, isOpen, onEnd, onOpenCell, x, y, onSetFlag, isFlag, isGameOver }) => {
+export const Cell = ({ size, text, isOpen, onEnd, onOpenCell, x, y, onSetFlag, isFlag, isGameOver }) => {
   const handleClick = useCallback(() => {
     if (!isGameOver) {
       text === '*' ? onEnd() : onOpenCell(x, y)
@@ -14,6 +14,7 @@ export const Cell = ({ text, isOpen, onEnd, onOpenCell, x, y, onSetFlag, isFlag,
     },
     [x, y, onSetFlag, isGameOver]
   )
+
   const label = useMemo(() => {
     if (isGameOver) {
       if (text !== '*') {
@@ -34,20 +35,48 @@ export const Cell = ({ text, isOpen, onEnd, onOpenCell, x, y, onSetFlag, isFlag,
     return text === '*' ? '💣' : text
   }, [text, isGameOver, isFlag, isOpen])
 
+  const styles = useStyles(size, text)
   return (
-    <div style={{ width: SIZE, height: SIZE, lineHeight: SIZE, textAlign: 'center', padding: 2 }}>
-      <div
-        style={{ width: '100%', height: '100%', backgroundColor: '#fafafa', color: COLORS[text] }}
-        onClick={handleClick}
-        onContextMenu={handleSetFlag}>
+    <div style={styles.wrapper}>
+      <div style={styles.inner} onClick={handleClick} onContextMenu={handleSetFlag}>
         {label}
       </div>
     </div>
   )
 }
 
+const useStyles = (size, text) => {
+  let dimension = window.innerWidth / size
+  if (dimension > 40) {
+    dimension = 40
+  }
+  if (dimension < 10) {
+    dimension = 10
+  }
+
+  return useMemo(
+    () => ({
+      wrapper: {
+        width: dimension,
+        height: dimension,
+        lineHeight: dimension + 'px',
+        padding: 2,
+      },
+      inner: {
+        width: '100%',
+        height: '100%',
+        fontSize: dimension * 0.8,
+        textAlign: 'center',
+        backgroundColor: '#fafafa',
+        color: COLORS[text],
+      },
+    }),
+    [dimension, text]
+  )
+}
+
 const COLORS = {
-  '0': 'darkgray',
+  '0': 'gray',
   '1': 'green',
   '2': 'rgb(33, 82, 0)',
   '3': 'rgb(60, 76, 5)',
@@ -57,5 +86,3 @@ const COLORS = {
   '7': 'rgb(131, 17, 0)',
   '8': 'red',
 }
-
-const SIZE = `${100 / 45}vw`
