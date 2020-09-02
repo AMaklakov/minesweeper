@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Cell } from './Cell'
 import { getOpenCells } from '../util/open-cells'
-import without from 'lodash/without'
-import uniq from 'lodash/uniq'
-import difference from 'lodash/difference'
+import _ from 'lodash'
+import fp from 'lodash/fp'
 import { createField } from '../util/field'
 import { DEFAULT_FIELD_SIZE } from '../const/const'
 
@@ -21,24 +20,19 @@ export const Game = ({ size = DEFAULT_FIELD_SIZE }) => {
   const openCell = useCallback(
     (x, y) => {
       const cellsToOpen = getOpenCells(cells, x, y)
-      setOpenCells((openCells) => uniq([...openCells, ...cellsToOpen]))
+      setOpenCells((openCells) => _.uniq([...openCells, ...cellsToOpen]))
     },
     [cells]
   )
 
   useEffect(() => {
-    rowsFor: for (let y = 0; y < cells.length; y++) {
-      for (let x = 0; x < cells[y].length; x++) {
-        if (cells[y][x] === '0') {
-          openCell(x, y)
-          break rowsFor
-        }
-      }
-    }
+    const y = fp.findIndex(fp.find(fp.isEqual('0')))(cells)
+    const x = fp.findIndex(fp.isEqual('0'))(cells[y])
+    openCell(x, y)
   }, [])
 
   useEffect(() => {
-    if (flags.length === numberOfMines && difference(flags, minesPositions).length === 0) {
+    if (flags.length === numberOfMines && _.difference(flags, minesPositions).length === 0) {
       setIsGameOver(true)
       setTimeout(() => alert('Вы выиграли! 🎉🎉🎉 \n Обновите страницу чтобы начать заново'))
     }
@@ -51,7 +45,7 @@ export const Game = ({ size = DEFAULT_FIELD_SIZE }) => {
 
   const handleSetFlag = useCallback((x, y) => {
     const position = `${x} ${y}`
-    setFlags((flags) => (flags.includes(position) ? without(flags, position) : [...flags, position]))
+    setFlags((flags) => (flags.includes(position) ? _.without(flags, position) : [...flags, position]))
   }, [])
 
   const territory = useMemo(() => (openCells.length / (size * size)).toFixed(2), [openCells, cells, size])

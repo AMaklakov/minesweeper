@@ -7,7 +7,6 @@ const App = () => {
   const [size, setSize] = useState(DEFAULT_FIELD_SIZE)
 
   const handleInputChange = useCallback((event) => {
-    console.log(event.target)
     const value = event.target.value
 
     if (Number.isInteger(Number(value))) {

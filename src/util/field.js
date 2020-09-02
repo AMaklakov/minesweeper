@@ -1,21 +1,21 @@
-import { getRandomInt } from './util'
 import { getNeighbourCells } from '../const/const'
+import _ from 'lodash'
+import fp from 'lodash/fp'
 
 export const createField = (width, height, numberOfMines) => {
-  const field = Array(height)
-    .fill(null)
-    .map(() => new Array(width).fill('0'))
+  const field = _.times(height, () => _.times(width, _.constant('0')))
 
   const positions = new Set()
 
   while (positions.size !== numberOfMines) {
-    const x = getRandomInt(0, width)
-    const y = getRandomInt(0, height)
+    const x = _.random(width - 1)
+    const y = _.random(height - 1)
     positions.add(`${x} ${y}`)
     field[y][x] = '*'
   }
 
-  return [field.map((row, y) => row.map((cell, x) => getCellNumber(field, x, y, cell))), [...positions]]
+  const fieldWithNumbers = _.map(field, (row, y) => _.map(row, (cell, x) => getCellNumber(field, x, y, cell)))
+  return [fieldWithNumbers, [...positions]]
 }
 
 export const getCellNumber = (field, x, y, cell) => {
@@ -23,7 +23,12 @@ export const getCellNumber = (field, x, y, cell) => {
     return cell
   }
 
-  return getNeighbourCells(x, y, field.length)
-    .filter(([newX, newY]) => field[newY][newX] === '*')
-    .length.toString()
+  return countSurroundBombs(getNeighbourCells(x, y, field.length), field)
 }
+
+const countSurroundBombs = (cells, field) =>
+  fp.compose(
+    fp.toString,
+    fp.size,
+    fp.filter(([x, y]) => field[y][x] === '*')
+  )(cells)
