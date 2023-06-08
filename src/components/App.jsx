@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react'
-import { Game } from './Game'
-import { DEFAULT_FIELD_SIZE } from '../const/const'
+import Field from './Board'
+import { DEFAULT_FIELD_SIZE } from '../util'
 
 const App = () => {
   const [inputValue, setInputValue] = useState(DEFAULT_FIELD_SIZE)
@@ -17,15 +17,15 @@ const App = () => {
   const handleStartGame = useCallback(() => setSize(inputValue), [inputValue])
 
   return (
-    <div>
+    <>
       <h1>Сапер</h1>
       <div>
         <p>Введите размер поля</p>
         <input type="text" value={inputValue} onChange={handleInputChange} />
         <button onClick={handleStartGame}>Начать!</button>
       </div>
-      <Game key={size} size={size} />
-    </div>
+      <Field size={size} key={size} />
+    </>
   )
 }
 
