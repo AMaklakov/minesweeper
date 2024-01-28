@@ -1,16 +1,18 @@
 import React, { useCallback, useMemo } from 'react'
 import { BOMB, COLORS } from '../util'
+import useLongPress from '../hooks/useLongPress'
 
 export default function Cell({ position, value, isOpen, isFlag, onClick, onMouse2 }) {
   const handleClick = useCallback(() => onClick?.(position), [position, onClick])
 
   const handleMouse2 = useCallback(
     (e) => {
-      e.preventDefault()
+      e?.preventDefault()
       onMouse2?.(position)
     },
     [position, onMouse2]
   )
+  const longPress = useLongPress(handleMouse2)
 
   const label = useMemo(() => {
     const label = value === BOMB ? '💣' : value
@@ -21,7 +23,7 @@ export default function Cell({ position, value, isOpen, isFlag, onClick, onMouse
   }, [isFlag, isOpen, value])
 
   return (
-    <div style={{ backgroundColor: COLORS[label] }} onClick={handleClick} onContextMenu={handleMouse2}>
+    <div style={{ backgroundColor: COLORS[label] }} onClick={handleClick} onContextMenu={handleMouse2} {...longPress}>
       {label}
     </div>
   )

@@ -63,7 +63,7 @@ export default function Field({ size = DEFAULT_FIELD_SIZE }) {
 
   return (
     <>
-      <div className="analytics">
+      <div className="flex-col-center">
         <span>
           Флагов: {flags.size} из {minesCount}
         </span>
